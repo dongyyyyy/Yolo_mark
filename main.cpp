@@ -153,7 +153,8 @@ int main(int argc, char *argv[])
 		if (argc >= 4 && (train_filename == "cap_video" || train_filename == "cap_video_backward")) {
 			const std::string videofile = synset_filename;
 			cv::VideoCapture cap(videofile);
-			const int fps = cap.get(CV_CAP_PROP_FPS);
+			const int fps = cap.get(CAP_PROP_FPS);
+			//const int fps = cap.get(CV_CAP_PROP_FPS);
             int frame_counter = 0, image_counter = 0;
             int backward = (train_filename == "cap_video_backward") ? 1 : 0;
             if (backward) image_counter = 99999999; // 99M
@@ -490,8 +491,10 @@ int main(int argc, char *argv[])
 
 				marks_changed = false;
 
-				rectangle(frame, prev_img_rect, Scalar(100, 100, 100), CV_FILLED);
-				rectangle(frame, next_img_rect, Scalar(100, 100, 100), CV_FILLED);
+				rectangle(frame, prev_img_rect, Scalar(100, 100, 100), FILLED);
+				//rectangle(frame, prev_img_rect, Scalar(100, 100, 100), CV_FILLED);
+				rectangle(frame, next_img_rect, Scalar(100, 100, 100), FILLED);
+				//rectangle(frame, next_img_rect, Scalar(100, 100, 100), CV_FILLED);
 			}
 
 			trackbar_value = min(max(0, trackbar_value), (int)jpg_filenames_path.size() - 1);
