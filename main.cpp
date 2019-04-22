@@ -371,6 +371,7 @@ int main(int argc, char *argv[])
 				setTrackbarPos(trackbar_name, window_name, trackbar_value);
 				frame(Rect(0, 0, frame.cols, preview.rows)) = Scalar::all(0);
                 move_rect_id = -1;
+				//좌표를 찍는 구간 해당 구역 필히 공부하기 !
 
 				// save current coords
 				if (old_trackbar_value >= 0) // && current_coord_vec.size() > 0) // Yolo v2 can processes background-image without objects
