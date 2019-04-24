@@ -60,32 +60,32 @@ Rect prev_img_rect(0, 0, 50, 100);
 Rect next_img_rect(1280 - 50, 0, 50, 100);
 
 
-void callback_mouse_click(int event, int x, int y, int flags, void* user_data)
+void callback_mouse_click(int event, int x, int y, int flags, void* user_data)// 마우스 클릭 이벤트 관련 함수
 {
     if (event == cv::EVENT_LBUTTONDBLCLK)
     {
         std::cout << "cv::EVENT_LBUTTONDBLCLK \n";
     }
-    else if (event == cv::EVENT_LBUTTONDOWN)
-    {
+    else if (event == cv::EVENT_LBUTTONDOWN)// 마우스 왼쪽 버튼을 클릭했을 때 발생하는 이벤트함수 
+    { 
         draw_select = true;
         selected = false;
-        x_start = x;
-        y_start = y;
+        x_start = x;//마우스 왼쪽 클릭한 지점이 x시작 좌표 위치로 저장
+        y_start = y;//마우스 왼쪽 클릭한 지점이 y시작 좌표 위치로 저장
 
         if (prev_img_rect.contains(Point2i(x, y))) add_id_img = -1;
         else if (next_img_rect.contains(Point2i(x, y))) add_id_img = 1;
         else add_id_img = 0;
         //std::cout << "cv::EVENT_LBUTTONDOWN \n";
     }
-    else if (event == cv::EVENT_LBUTTONUP)
+    else if (event == cv::EVENT_LBUTTONUP)//마우스 왼쪽 버튼을 크릭을 유지하다 멈췄을 때 발생하는 이벤트 함수 
     {
-        x_size = abs(x - x_start);
-        y_size = abs(y - y_start);
-        x_end = max(x, 0);
-        y_end = max(y, 0);
-        draw_select = false;
-        selected = true;
+        x_size = abs(x - x_start);//현재 x좌표와 x시작 좌표의 차이의 절대값
+        y_size = abs(y - y_start);//현재 y좌표와 y시작 좌표의 차이의 절대값
+        x_end = max(x, 0);//x좌표의 위치
+        y_end = max(y, 0);//y좌표의 위치
+        draw_select = false;//draw종료
+        selected = true;//선택완료
         //std::cout << "cv::EVENT_LBUTTONUP \n";
     }
     else if (event == cv::EVENT_RBUTTONDOWN)
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
 			std::string const filename = i.substr(pos_filename);
 			std::string const ext = i.substr(i.find_last_of(".") + 1);
 			std::string const filename_without_ext = filename.substr(0, filename.find_last_of("."));
-
+			// image 형식 지원 방식 
 			if (ext == "jpg" || ext == "JPG" || 
 				ext == "jpeg" || ext == "JPEG" ||
 				ext == "bmp" || ext == "BMP" ||
@@ -348,6 +348,14 @@ int main(int argc, char *argv[])
 		moveWindow(window_name, 0, 0);
 		setMouseCallback(window_name, callback_mouse_click);
 
+		/*added to watch bounding box image*/
+		std::string const bounding_name = "bounding images";
+		namedWindow(bounding_name,WINDOW_NORMAL);
+		resizeWindow(bounding_name,100,100);
+		imshow(bounding_name,frame);
+
+
+
 		bool next_by_click = false;
 		bool marks_changed = false;
 
@@ -424,6 +432,7 @@ int main(int argc, char *argv[])
 				// show preview images
 				for (size_t i = 0; i < preview_number && (i + trackbar_value) < jpg_filenames_path.size(); ++i)
 				{
+					// trackbar image 설정
 					Mat img = imread(jpg_filenames_path[trackbar_value + i]);
 					// check if the image has been loaded successful to prevent crash 
 					if (img.cols == 0)
@@ -437,11 +446,11 @@ int main(int argc, char *argv[])
 					preview.copyTo(dst_roi);
 					//rectangle(frame, rect_dst, Scalar(200, 150, 200), 2);
 					putText(dst_roi, jpg_filenames[trackbar_value + i], Point2i(0, 10), FONT_HERSHEY_COMPLEX_SMALL, 0.5, Scalar::all(255));
-
+					// bounding box 처리를 할 이미지  설정 
 					if (i == 0)
 					{
 						resize(img, full_image, full_rect_dst.size());
-						full_image.copyTo(full_image_roi);
+						full_image.copyTo(full_image_roi); // frame에 이미지 채우기
 						current_img_size = img.size();
 
 						try {
@@ -549,8 +558,11 @@ int main(int argc, char *argv[])
 					coord.abs_rect = selected_rect;
 					coord.id = current_obj_id;
 					current_coord_vec.push_back(coord);
-
 					marks_changed = true;
+					resizeWindow(bounding_name,coord.abs_rect.width,coord.abs_rect.height);
+					Rect bounding(coord.abs_rect.x,coord.abs_rect.y,coord.abs_rect.width,coord.abs_rect.height);
+					imshow(bounding_name,full_image(bounding));
+			
 				}
 			}
 
@@ -581,7 +593,7 @@ int main(int argc, char *argv[])
 			}
 
             // marking is in progress (left mouse button is ON)
-			if (draw_select)
+			if (draw_select)//draw가 진행중일 때 작동하는 if문
 			{
 				if (add_id_img != 0) trackbar_value += add_id_img;
 
