@@ -33,7 +33,7 @@
 #pragma comment(lib, "opencv_highgui" OPENCV_VERSION LIB_SUFFIX)
 #endif
 
-
+// change something
 using namespace cv;
 
 std::atomic<bool> right_button_click;
